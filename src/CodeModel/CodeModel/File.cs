@@ -37,5 +37,10 @@ namespace Typewriter.CodeModel
         /// The name of the file.
         /// </summary>
         public abstract string Name { get; }
+
+        /// <summary>
+        /// The service registrations defined globally.
+        /// </summary>
+        public abstract ServiceRegistrationCollection ServiceRegistrations { get; }
     }
 }

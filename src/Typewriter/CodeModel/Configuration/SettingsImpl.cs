@@ -53,7 +53,7 @@ namespace Typewriter.CodeModel.Configuration
             return this;
         }
 
-        public ICollection<string> IncludedProjects
+        public override ICollection<string> IncludedProjects
         {
             get
             {

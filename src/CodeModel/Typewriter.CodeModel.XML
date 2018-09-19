@@ -674,6 +674,11 @@
             The name of the file.
             </summary>
         </member>
+        <member name="P:Typewriter.CodeModel.File.ServiceRegistrations">
+            <summary>
+            The service registrations defined globally.
+            </summary>
+        </member>
         <member name="T:Typewriter.CodeModel.Interface">
             <summary>
             Represents an interface.

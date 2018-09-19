@@ -180,6 +180,7 @@
     <Compile Include="RoslynMethodMetadata.cs" />
     <Compile Include="RoslynParameterMetadata.cs" />
     <Compile Include="RoslynPropertyMetadata.cs" />
+    <Compile Include="RoslynServiceRegistrationMetadata.cs" />
     <Compile Include="RoslynTypeMetadata.cs" />
     <Compile Include="RoslynTypeParameterMetadata.cs" />
   </ItemGroup>

@@ -66,5 +66,7 @@ namespace Typewriter.Metadata.Roslyn
 
             return symbols;
         }
+
+        public IEnumerable<IServiceRegistrationMetadata> ServiceRegistrations { get; set; }
     }
 }

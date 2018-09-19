@@ -40,5 +40,7 @@ namespace Typewriter.Metadata.CodeDom
         {
             return typeFactory.GetType(fullName);
         }
+
+        public IEnumerable<IServiceRegistrationMetadata> ServiceRegistrations => new List<IServiceRegistrationMetadata>();
     }
 }

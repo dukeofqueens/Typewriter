@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Typewriter.CodeModel;
 
 namespace Typewriter.Configuration
@@ -45,5 +46,7 @@ namespace Typewriter.Configuration
         /// 
         /// </summary>
         public PartialRenderingMode PartialRenderingMode { get; set; } = PartialRenderingMode.Partial;
+
+        public abstract ICollection<string> IncludedProjects { get; }
     }
 }

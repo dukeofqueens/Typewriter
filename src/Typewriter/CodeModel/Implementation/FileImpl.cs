@@ -26,6 +26,9 @@ namespace Typewriter.CodeModel.Implementation
         private InterfaceCollection _interfaces;
         public override InterfaceCollection Interfaces => _interfaces ?? (_interfaces = InterfaceImpl.FromMetadata(_metadata.Interfaces, this));
 
+        private ServiceRegistrationCollection _serviceRegistrations;
+        public override ServiceRegistrationCollection ServiceRegistrations => _serviceRegistrations ?? (_serviceRegistrations =  ServiceRegistrationImpl.FromMetadata(_metadata.ServiceRegistrations));
+
         public override string ToString()
         {
             return Name;
