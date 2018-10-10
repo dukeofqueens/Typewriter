@@ -13,6 +13,7 @@ namespace Typewriter.CodeModel
         public abstract string RequestTypeName { get;  }
         public abstract string ResponseTypeName { get;  }
         public abstract string ServiceName { get;  }
+        public abstract string WorkflowName { get;  }
     }
 
     public interface ServiceRegistrationCollection : ItemCollection<ServiceRegistration>

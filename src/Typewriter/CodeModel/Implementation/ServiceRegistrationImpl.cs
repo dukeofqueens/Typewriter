@@ -18,6 +18,8 @@ namespace Typewriter.CodeModel.Implementation
 
         public override string ServiceName => _metadata.ServiceName;
 
+        public override string WorkflowName => _metadata.WorkflowName;
+
         ServiceRegistrationImpl(IServiceRegistrationMetadata metadata)
         {
             _metadata = metadata;            

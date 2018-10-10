@@ -10,6 +10,7 @@ using Microsoft.VisualStudio.Shell;
 using Typewriter.Configuration;
 using Typewriter.Metadata.Interfaces;
 using Typewriter.Metadata.Providers;
+using Task = System.Threading.Tasks.Task;
 
 namespace Typewriter.Metadata.Roslyn
 {
@@ -20,7 +21,7 @@ namespace Typewriter.Metadata.Roslyn
         public RoslynMetadataProvider()
         {
             var componentModel = ServiceProvider.GlobalProvider.GetService(typeof(SComponentModel)) as IComponentModel;
-            this.workspace = componentModel?.GetService<VisualStudioWorkspace>();
+            workspace = componentModel?.GetService<VisualStudioWorkspace>();
         }
 
         public IFileMetadata GetFile(string path, Settings settings, Action<string[]> requestRender)
@@ -45,29 +46,35 @@ namespace Typewriter.Metadata.Roslyn
             _registrations = null;
         }
 
+
+
         private IEnumerable<IServiceRegistrationMetadata> GetServiceRegistrations(Settings settings)
         {
-           
-            var compilations = System.Threading.Tasks.Task.WhenAll(workspace.CurrentSolution.Projects.Where(p => settings.IncludedProjects.Contains(p.FilePath)).Select(p => p.GetCompilationAsync())).Result.Where(c => c != null).ToList();
+            return Task.WhenAll(workspace.CurrentSolution.Projects.Where(p => settings.IncludedProjects.Contains(p.FilePath)).Select(p => p.GetCompilationAsync()))
+                .Result
+                .Where(c => c != null).ToList().SelectMany(compilation => compilation.SyntaxTrees.Select(syntaxTree => compilation.GetSemanticModel(syntaxTree)))
+                .SelectMany(semanticModel => semanticModel.SyntaxTree.GetRoot().DescendantNodes().OfType<InvocationExpressionSyntax>().Where(invocationExpression =>
+                {
+                    if (invocationExpression.Expression.ToString().Contains("RegisterService"))
+                        return true;
 
-            var invocations = compilations.SelectMany(compilation => compilation.SyntaxTrees.Select(syntaxTree => compilation.GetSemanticModel(syntaxTree)))
-                .SelectMany(
-                    semanticModel => semanticModel
-                        .SyntaxTree
-                        .GetRoot()
-                        .DescendantNodes()
-                        .OfType<InvocationExpressionSyntax>().Where(invocationExpression => invocationExpression.Expression.ToString().Contains("RegisterService"))
-                        .Select(invocationExpression => new { syntax = invocationExpression, symbol = semanticModel.GetSymbolInfo(invocationExpression).Symbol})
-                ).ToList();
+                    if (invocationExpression.Expression.ToString().Contains(".State"))
+                        return invocationExpression.Expression.ToString().Contains(".Trigger");
 
-            
-            return invocations
-                .Where(m => m.symbol?.Name == "RegisterService" && m.symbol.Kind == SymbolKind.Method && ((IMethodSymbol)m.symbol).ReceiverType.Name == "IRequestHandlerFactory")
-                .Select(m => new RoslynServiceRegistrationMetadata(m.syntax, (IMethodSymbol)m.symbol))
-                .ToImmutableList();
-
-
+                    return false;
+                }).Select(invocationExpression => new
+                {
+                    syntax = invocationExpression,
+                    symbol = semanticModel.GetSymbolInfo(invocationExpression).Symbol,
+                    semanticModel
+                })).ToList().Where(m =>
+                {
+                    if (m.symbol?.Name == "RegisterService" && m.symbol.Kind == SymbolKind.Method && ((IMethodSymbol)m.symbol).ReceiverType.Name == "IRequestHandlerFactory")
+                        return true;
+                    if (m.symbol?.Name == "Trigger" && m.symbol.Kind == SymbolKind.Method)
+                        return ((IMethodSymbol)m.symbol).ReceiverType.Name.Contains("IStateConfigurationBuilder");
+                    return false;
+                }).Select(m => new RoslynServiceRegistrationMetadata(m.syntax, (IMethodSymbol)m.symbol, m.semanticModel)).ToImmutableList();
         }
-
     }
 }

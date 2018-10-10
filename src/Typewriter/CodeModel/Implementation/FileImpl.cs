@@ -1,4 +1,6 @@
-﻿using Typewriter.Metadata.Interfaces;
+﻿using System.Linq;
+using Typewriter.CodeModel.Collections;
+using Typewriter.Metadata.Interfaces;
 
 namespace Typewriter.CodeModel.Implementation
 {
@@ -28,6 +30,9 @@ namespace Typewriter.CodeModel.Implementation
 
         private ServiceRegistrationCollection _serviceRegistrations;
         public override ServiceRegistrationCollection ServiceRegistrations => _serviceRegistrations ?? (_serviceRegistrations =  ServiceRegistrationImpl.FromMetadata(_metadata.ServiceRegistrations));
+
+        private WorkflowCollection _workflows;
+        public override WorkflowCollection Workflows => _workflows ?? (_workflows = new WorkflowCollectionImpl(ServiceRegistrations.Where(sr => sr.WorkflowName != null).GroupBy(sr => sr.WorkflowName).Select(g => new WorkflowImpl(g.Key,new ServiceRegistrationCollectionImpl(g.GroupBy(sr => sr.ServiceName).Select(srg => srg.First()).ToList())))));
 
         public override string ToString()
         {

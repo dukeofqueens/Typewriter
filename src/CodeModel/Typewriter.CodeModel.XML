@@ -679,6 +679,11 @@
             The service registrations defined globally.
             </summary>
         </member>
+        <member name="P:Typewriter.CodeModel.File.Workflows">
+            <summary>
+            The workflows defined globally.
+            </summary>
+        </member>
         <member name="T:Typewriter.CodeModel.Interface">
             <summary>
             Represents an interface.

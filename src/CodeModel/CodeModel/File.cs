@@ -42,5 +42,10 @@ namespace Typewriter.CodeModel
         /// The service registrations defined globally.
         /// </summary>
         public abstract ServiceRegistrationCollection ServiceRegistrations { get; }
+
+        /// <summary>
+        /// The workflows defined globally.
+        /// </summary>
+        public abstract WorkflowCollection Workflows { get; }
     }
 }

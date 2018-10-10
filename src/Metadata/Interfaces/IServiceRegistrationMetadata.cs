@@ -11,5 +11,6 @@ namespace Typewriter.Metadata.Interfaces
         string RequestTypeName { get; set; }
         string ResponseTypeName { get; set; }
         string ServiceName { get; set; }
+        string WorkflowName { get; set; }
     }
 }
