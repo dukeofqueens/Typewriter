@@ -14,6 +14,7 @@ namespace Typewriter.CodeModel
         public abstract string ResponseTypeName { get;  }
         public abstract string ServiceName { get;  }
         public abstract string WorkflowName { get;  }
+        public abstract bool IsPublic { get;  }
     }
 
     public interface ServiceRegistrationCollection : ItemCollection<ServiceRegistration>

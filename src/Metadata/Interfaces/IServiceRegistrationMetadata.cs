@@ -12,5 +12,6 @@ namespace Typewriter.Metadata.Interfaces
         string ResponseTypeName { get; set; }
         string ServiceName { get; set; }
         string WorkflowName { get; set; }
+        bool IsPublic {get;set;}
     }
 }

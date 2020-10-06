@@ -24,7 +24,7 @@ namespace Typewriter.Metadata.Roslyn
             if (syntax.Expression.ToString().Contains("RegisterService"))
             {
                 parameters = _methodSymbol.Parameters;
-                if (parameters.Length == 3)
+                if (parameters.Length == 2 || parameters.Length == 3)
                 {
                     this.RequestTypeName = _methodSymbol.TypeArguments[0].ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
                     this.ResponseTypeName = _methodSymbol.TypeArguments[1].ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
@@ -50,8 +50,11 @@ namespace Typewriter.Metadata.Roslyn
                     typeArguments = namedTypeSymbol.TypeArguments;
                     ResponseTypeName = typeArguments[1].ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
                     ServiceName = syntax.ArgumentList.Arguments[0].GetFirstToken().ValueText;
+                    
                 }
             }
+
+            IsPublic = syntax.Expression.ToString().Contains("ServiceVisibility.Public");
 
             if (!syntax.Expression.ToString().Contains("Trigger"))
                 return;
@@ -86,5 +89,6 @@ namespace Typewriter.Metadata.Roslyn
         public string ResponseTypeName { get; set; }
         public string ServiceName { get; set; }
         public string WorkflowName { get; set; }
+        public bool IsPublic {get;set;} = false;
     }
 }

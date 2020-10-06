@@ -20,6 +20,8 @@ namespace Typewriter.CodeModel.Implementation
 
         public override string WorkflowName => _metadata.WorkflowName;
 
+        public override bool IsPublic => _metadata.IsPublic;
+
         ServiceRegistrationImpl(IServiceRegistrationMetadata metadata)
         {
             _metadata = metadata;            
