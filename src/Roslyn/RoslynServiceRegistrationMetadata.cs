@@ -1,14 +1,8 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.VisualStudio.PlatformUI;
 using Typewriter.Metadata.Interfaces;
 
 namespace Typewriter.Metadata.Roslyn
@@ -17,32 +11,39 @@ namespace Typewriter.Metadata.Roslyn
     {
         private readonly IMethodSymbol _methodSymbol;
 
+        public string RequestTypeName { get; set; }
+        public string ResponseTypeName { get; set; }
+        public string ServiceName { get; set; }
+        public string WorkflowName { get; set; }
+        public bool IsPublic {get;set;}
+
         public RoslynServiceRegistrationMetadata(InvocationExpressionSyntax syntax, IMethodSymbol methodSymbol, SemanticModel model)
         {
             this._methodSymbol = methodSymbol;
+            ImmutableArray<ITypeSymbol> typeArguments;
             ImmutableArray<IParameterSymbol> parameters;
+
             if (syntax.Expression.ToString().Contains("RegisterService"))
             {
                 parameters = _methodSymbol.Parameters;
-                if (parameters.Length == 2 || parameters.Length == 3)
+                typeArguments = this._methodSymbol.TypeArguments;
+                
+                //RegisterService()
+                //Add support for this if required.
+                if(typeArguments.Length == 0)
                 {
-                    this.RequestTypeName = _methodSymbol.TypeArguments[0].ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
-                    this.ResponseTypeName = _methodSymbol.TypeArguments[1].ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
-                    this.ServiceName = syntax.ArgumentList.Arguments[0].GetFirstToken().ValueText;
+                    return;                    
+                    ServiceName = syntax.ArgumentList.Arguments[0].GetFirstToken().ValueText;
                 }
-            }
 
-            ImmutableArray<ITypeSymbol> typeArguments;
-            if (syntax.Expression.ToString().Contains("RegisterService"))
-            {
-                parameters = this._methodSymbol.Parameters;
-                if (parameters.Length == 1)
+                //RegisterService<THandler>
+                if(typeArguments.Length == 1)
                 {
-                    typeArguments = this._methodSymbol.TypeArguments;
-                    INamedTypeSymbol namedTypeSymbol = typeArguments[0].AllInterfaces.FirstOrDefault(ts =>
+                     INamedTypeSymbol namedTypeSymbol = typeArguments[0].AllInterfaces.FirstOrDefault(ts =>
                    {
                        if (ts.Name == "IRequestResponseHandler" && ts.IsGenericType)
                            return ts.TypeArguments.Length == 2;
+
                        return false;
                    });
                     typeArguments = namedTypeSymbol.TypeArguments;
@@ -50,11 +51,19 @@ namespace Typewriter.Metadata.Roslyn
                     typeArguments = namedTypeSymbol.TypeArguments;
                     ResponseTypeName = typeArguments[1].ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
                     ServiceName = syntax.ArgumentList.Arguments[0].GetFirstToken().ValueText;
-                    
                 }
-            }
 
-            IsPublic = syntax.Expression.ToString().Contains("ServiceVisibility.Public");
+                //RegisterService<TRequest, TResponse, THandler>
+                if(typeArguments.Length == 3)
+                {
+                    RequestTypeName = _methodSymbol.TypeArguments[0].ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
+                    ResponseTypeName = _methodSymbol.TypeArguments[1].ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
+                    ServiceName = syntax.ArgumentList.Arguments[0].GetFirstToken().ValueText;
+                }
+
+                IsPublic = syntax.ToString().Contains("ServiceVisibility.Public");
+            }
+           
 
             if (!syntax.Expression.ToString().Contains("Trigger"))
                 return;
@@ -82,13 +91,8 @@ namespace Typewriter.Metadata.Roslyn
             }
         }
 
+               
 
         
-
-        public string RequestTypeName { get; set; }
-        public string ResponseTypeName { get; set; }
-        public string ServiceName { get; set; }
-        public string WorkflowName { get; set; }
-        public bool IsPublic {get;set;} = false;
     }
 }

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="e88a8363-43da-4ecd-aea8-ac4a155b5ca8" Version="1.23.0" Language="en-US" Publisher="frhagn" />
+        <Identity Id="e88a8363-43da-4ecd-aea8-ac4a155b5ca8" Version="1.25.0" Language="en-US" Publisher="frhagn" />
         <DisplayName>Typewriter-Fork</DisplayName>
         <Description xml:space="preserve">Typewriter generates TypeScript files from c# code files using TypeScript Templates. This allows you to create fully typed TypeScript representations of server side API that automatically updates when you make changes to your c# code.</Description>
         <MoreInfo>http://frhagn.github.io/Typewriter/</MoreInfo>
